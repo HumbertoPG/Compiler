@@ -43,6 +43,18 @@ def t_error(t):
 
 lexer = lex.lex()
 
+def Add(p):
+    """
+    Add : Add AddOp Term
+        | Term
+    """
+
+def p_AddOp(p):
+    """
+    AddOp : '+'
+          | '-'
+    """
+
 def p_Term(p):
     """
     Term : Term MulOp Factor
