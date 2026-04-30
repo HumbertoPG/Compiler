@@ -27,14 +27,14 @@ def t_ID(t):
         t.type = keywords[t.value]
     return t
 
-def t_INTLIT(t):
-    r'[0-9](_?[0-9])*'
-    t.value = int(t.value)
-    return t
-
 def t_FLOATLIT(t):
     r'[0-9](_?[0-9])*\.[0-9](_?[0-9])*'
     t.value = float(t.value)
+    return t
+
+def t_INTLIT(t):
+    r'[0-9](_?[0-9])*'
+    t.value = int(t.value)
     return t
 
 def t_error(t):
@@ -48,23 +48,18 @@ def p_Term(p):
     Term : Term MulOp Factor
          | Factor
     """
-    if len(p) == 4:
-        p[0] = ('binop', p[2], p[1], p[3])
-    else:
-        p[0] = p[1]
 
 def p_MulOp(p):
     """
     MulOp : '*'
           | '/'
+          | '%'
     """
-    p[0] = p[1]
 
 def p_Factor(p):
     """
     Factor : Primary
     """
-    p[0] = p[1]
 
 def p_Primary(p):
     """
@@ -73,10 +68,6 @@ def p_Primary(p):
             | FLOATLIT
             | '(' Term ')'
     """
-    if len(p) == 2:
-        p[0] = p[1]
-    else:
-        p[0] = p[2]
 
 def p_error(p):
     if p:
