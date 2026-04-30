@@ -21,11 +21,7 @@ t_PP = r'\+\+'
 
 literals = '+-*/-(){} ,;='
 
-def t_ID(t):
-    r'[a-z][a-zA-Z0-9]*'
-    if t.value in keywords.keys():
-        t.type = keywords[t.value]
-    return t
+start = 'Add'
 
 def t_FLOATLIT(t):
     r'[0-9](_?[0-9])*\.[0-9](_?[0-9])*'
@@ -37,23 +33,31 @@ def t_INTLIT(t):
     t.value = int(t.value)
     return t
 
+def t_ID(t):
+    r'[a-z][a-zA-Z0-9]*'
+    if t.value in keywords.keys():
+        t.type = keywords[t.value]
+    return t
+
 def t_error(t):
     print(f"Error léxico: '{t.value[0]}'")
     t.lexer.skip(1)
 
 lexer = lex.lex()
 
-def Add(p):
+def p_Add(p):
     """
     Add : Add AddOp Term
         | Term
     """
+    return p[1]
 
 def p_AddOp(p):
     """
     AddOp : '+'
           | '-'
     """
+    return p[1]
 
 def p_Term(p):
     """
@@ -89,4 +93,4 @@ def p_error(p):
 
 parser = yacc.yacc()
 
-print(parser.parse("3.1415 * (radius * radius)"))
+print(parser.parse("3+3"))

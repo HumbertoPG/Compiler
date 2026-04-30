@@ -9,29 +9,35 @@ Unused terminals:
 
 Grammar
 
-Rule 0     S' -> Term
-Rule 1     Term -> Term MulOp Factor
-Rule 2     Term -> Factor
-Rule 3     MulOp -> *
-Rule 4     MulOp -> /
-Rule 5     MulOp -> %
-Rule 6     Factor -> Primary
-Rule 7     Primary -> ID
-Rule 8     Primary -> INTLIT
-Rule 9     Primary -> FLOATLIT
-Rule 10    Primary -> ( Term )
+Rule 0     S' -> Add
+Rule 1     Add -> Add AddOp Term
+Rule 2     Add -> Term
+Rule 3     AddOp -> +
+Rule 4     AddOp -> -
+Rule 5     Term -> Term MulOp Factor
+Rule 6     Term -> Factor
+Rule 7     MulOp -> *
+Rule 8     MulOp -> /
+Rule 9     MulOp -> %
+Rule 10    Factor -> Primary
+Rule 11    Primary -> ID
+Rule 12    Primary -> INTLIT
+Rule 13    Primary -> FLOATLIT
+Rule 14    Primary -> ( Term )
 
 Terminals, with rules where they appear
 
-%                    : 5
-(                    : 10
-)                    : 10
-*                    : 3
-/                    : 4
-FLOATLIT             : 9
-ID                   : 7
+%                    : 9
+(                    : 14
+)                    : 14
+*                    : 7
++                    : 3
+-                    : 4
+/                    : 8
+FLOATLIT             : 13
+ID                   : 11
 IF                   : 
-INTLIT               : 8
+INTLIT               : 12
 LE                   : 
 PP                   : 
 WHILE                : 
@@ -39,202 +45,293 @@ error                :
 
 Nonterminals, with rules where they appear
 
-Factor               : 1 2
-MulOp                : 1
-Primary              : 6
-Term                 : 1 10 0
+Add                  : 1 0
+AddOp                : 1
+Factor               : 5 6
+MulOp                : 5
+Primary              : 10
+Term                 : 1 2 5 14
 
 Parsing method: LALR
 
 state 0
 
-    (0) S' -> . Term
-    (1) Term -> . Term MulOp Factor
-    (2) Term -> . Factor
-    (6) Factor -> . Primary
-    (7) Primary -> . ID
-    (8) Primary -> . INTLIT
-    (9) Primary -> . FLOATLIT
-    (10) Primary -> . ( Term )
+    (0) S' -> . Add
+    (1) Add -> . Add AddOp Term
+    (2) Add -> . Term
+    (5) Term -> . Term MulOp Factor
+    (6) Term -> . Factor
+    (10) Factor -> . Primary
+    (11) Primary -> . ID
+    (12) Primary -> . INTLIT
+    (13) Primary -> . FLOATLIT
+    (14) Primary -> . ( Term )
 
-    ID              shift and go to state 4
-    INTLIT          shift and go to state 5
-    FLOATLIT        shift and go to state 6
-    (               shift and go to state 7
+    ID              shift and go to state 5
+    INTLIT          shift and go to state 6
+    FLOATLIT        shift and go to state 7
+    (               shift and go to state 8
 
-    Term                           shift and go to state 1
-    Factor                         shift and go to state 2
-    Primary                        shift and go to state 3
+    Add                            shift and go to state 1
+    Term                           shift and go to state 2
+    Factor                         shift and go to state 3
+    Primary                        shift and go to state 4
 
 state 1
 
-    (0) S' -> Term .
-    (1) Term -> Term . MulOp Factor
-    (3) MulOp -> . *
-    (4) MulOp -> . /
-    (5) MulOp -> . %
+    (0) S' -> Add .
+    (1) Add -> Add . AddOp Term
+    (3) AddOp -> . +
+    (4) AddOp -> . -
 
-    *               shift and go to state 9
-    /               shift and go to state 10
-    %               shift and go to state 11
+    +               shift and go to state 10
+    -               shift and go to state 11
 
-    MulOp                          shift and go to state 8
+    AddOp                          shift and go to state 9
 
 state 2
 
-    (2) Term -> Factor .
+    (2) Add -> Term .
+    (5) Term -> Term . MulOp Factor
+    (7) MulOp -> . *
+    (8) MulOp -> . /
+    (9) MulOp -> . %
 
-    *               reduce using rule 2 (Term -> Factor .)
-    /               reduce using rule 2 (Term -> Factor .)
-    %               reduce using rule 2 (Term -> Factor .)
-    $end            reduce using rule 2 (Term -> Factor .)
-    )               reduce using rule 2 (Term -> Factor .)
+    +               reduce using rule 2 (Add -> Term .)
+    -               reduce using rule 2 (Add -> Term .)
+    $end            reduce using rule 2 (Add -> Term .)
+    *               shift and go to state 13
+    /               shift and go to state 14
+    %               shift and go to state 15
 
+    MulOp                          shift and go to state 12
 
 state 3
 
-    (6) Factor -> Primary .
+    (6) Term -> Factor .
 
-    *               reduce using rule 6 (Factor -> Primary .)
-    /               reduce using rule 6 (Factor -> Primary .)
-    %               reduce using rule 6 (Factor -> Primary .)
-    $end            reduce using rule 6 (Factor -> Primary .)
-    )               reduce using rule 6 (Factor -> Primary .)
+    *               reduce using rule 6 (Term -> Factor .)
+    /               reduce using rule 6 (Term -> Factor .)
+    %               reduce using rule 6 (Term -> Factor .)
+    +               reduce using rule 6 (Term -> Factor .)
+    -               reduce using rule 6 (Term -> Factor .)
+    $end            reduce using rule 6 (Term -> Factor .)
+    )               reduce using rule 6 (Term -> Factor .)
 
 
 state 4
 
-    (7) Primary -> ID .
+    (10) Factor -> Primary .
 
-    *               reduce using rule 7 (Primary -> ID .)
-    /               reduce using rule 7 (Primary -> ID .)
-    %               reduce using rule 7 (Primary -> ID .)
-    $end            reduce using rule 7 (Primary -> ID .)
-    )               reduce using rule 7 (Primary -> ID .)
+    *               reduce using rule 10 (Factor -> Primary .)
+    /               reduce using rule 10 (Factor -> Primary .)
+    %               reduce using rule 10 (Factor -> Primary .)
+    +               reduce using rule 10 (Factor -> Primary .)
+    -               reduce using rule 10 (Factor -> Primary .)
+    $end            reduce using rule 10 (Factor -> Primary .)
+    )               reduce using rule 10 (Factor -> Primary .)
 
 
 state 5
 
-    (8) Primary -> INTLIT .
+    (11) Primary -> ID .
 
-    *               reduce using rule 8 (Primary -> INTLIT .)
-    /               reduce using rule 8 (Primary -> INTLIT .)
-    %               reduce using rule 8 (Primary -> INTLIT .)
-    $end            reduce using rule 8 (Primary -> INTLIT .)
-    )               reduce using rule 8 (Primary -> INTLIT .)
+    *               reduce using rule 11 (Primary -> ID .)
+    /               reduce using rule 11 (Primary -> ID .)
+    %               reduce using rule 11 (Primary -> ID .)
+    +               reduce using rule 11 (Primary -> ID .)
+    -               reduce using rule 11 (Primary -> ID .)
+    $end            reduce using rule 11 (Primary -> ID .)
+    )               reduce using rule 11 (Primary -> ID .)
 
 
 state 6
 
-    (9) Primary -> FLOATLIT .
+    (12) Primary -> INTLIT .
 
-    *               reduce using rule 9 (Primary -> FLOATLIT .)
-    /               reduce using rule 9 (Primary -> FLOATLIT .)
-    %               reduce using rule 9 (Primary -> FLOATLIT .)
-    $end            reduce using rule 9 (Primary -> FLOATLIT .)
-    )               reduce using rule 9 (Primary -> FLOATLIT .)
+    *               reduce using rule 12 (Primary -> INTLIT .)
+    /               reduce using rule 12 (Primary -> INTLIT .)
+    %               reduce using rule 12 (Primary -> INTLIT .)
+    +               reduce using rule 12 (Primary -> INTLIT .)
+    -               reduce using rule 12 (Primary -> INTLIT .)
+    $end            reduce using rule 12 (Primary -> INTLIT .)
+    )               reduce using rule 12 (Primary -> INTLIT .)
 
 
 state 7
 
-    (10) Primary -> ( . Term )
-    (1) Term -> . Term MulOp Factor
-    (2) Term -> . Factor
-    (6) Factor -> . Primary
-    (7) Primary -> . ID
-    (8) Primary -> . INTLIT
-    (9) Primary -> . FLOATLIT
-    (10) Primary -> . ( Term )
+    (13) Primary -> FLOATLIT .
 
-    ID              shift and go to state 4
-    INTLIT          shift and go to state 5
-    FLOATLIT        shift and go to state 6
-    (               shift and go to state 7
+    *               reduce using rule 13 (Primary -> FLOATLIT .)
+    /               reduce using rule 13 (Primary -> FLOATLIT .)
+    %               reduce using rule 13 (Primary -> FLOATLIT .)
+    +               reduce using rule 13 (Primary -> FLOATLIT .)
+    -               reduce using rule 13 (Primary -> FLOATLIT .)
+    $end            reduce using rule 13 (Primary -> FLOATLIT .)
+    )               reduce using rule 13 (Primary -> FLOATLIT .)
 
-    Term                           shift and go to state 12
-    Factor                         shift and go to state 2
-    Primary                        shift and go to state 3
 
 state 8
 
-    (1) Term -> Term MulOp . Factor
-    (6) Factor -> . Primary
-    (7) Primary -> . ID
-    (8) Primary -> . INTLIT
-    (9) Primary -> . FLOATLIT
-    (10) Primary -> . ( Term )
+    (14) Primary -> ( . Term )
+    (5) Term -> . Term MulOp Factor
+    (6) Term -> . Factor
+    (10) Factor -> . Primary
+    (11) Primary -> . ID
+    (12) Primary -> . INTLIT
+    (13) Primary -> . FLOATLIT
+    (14) Primary -> . ( Term )
 
-    ID              shift and go to state 4
-    INTLIT          shift and go to state 5
-    FLOATLIT        shift and go to state 6
-    (               shift and go to state 7
+    ID              shift and go to state 5
+    INTLIT          shift and go to state 6
+    FLOATLIT        shift and go to state 7
+    (               shift and go to state 8
 
-    Factor                         shift and go to state 13
-    Primary                        shift and go to state 3
+    Term                           shift and go to state 16
+    Factor                         shift and go to state 3
+    Primary                        shift and go to state 4
 
 state 9
 
-    (3) MulOp -> * .
+    (1) Add -> Add AddOp . Term
+    (5) Term -> . Term MulOp Factor
+    (6) Term -> . Factor
+    (10) Factor -> . Primary
+    (11) Primary -> . ID
+    (12) Primary -> . INTLIT
+    (13) Primary -> . FLOATLIT
+    (14) Primary -> . ( Term )
 
-    ID              reduce using rule 3 (MulOp -> * .)
-    INTLIT          reduce using rule 3 (MulOp -> * .)
-    FLOATLIT        reduce using rule 3 (MulOp -> * .)
-    (               reduce using rule 3 (MulOp -> * .)
+    ID              shift and go to state 5
+    INTLIT          shift and go to state 6
+    FLOATLIT        shift and go to state 7
+    (               shift and go to state 8
 
+    Term                           shift and go to state 17
+    Factor                         shift and go to state 3
+    Primary                        shift and go to state 4
 
 state 10
 
-    (4) MulOp -> / .
+    (3) AddOp -> + .
 
-    ID              reduce using rule 4 (MulOp -> / .)
-    INTLIT          reduce using rule 4 (MulOp -> / .)
-    FLOATLIT        reduce using rule 4 (MulOp -> / .)
-    (               reduce using rule 4 (MulOp -> / .)
+    ID              reduce using rule 3 (AddOp -> + .)
+    INTLIT          reduce using rule 3 (AddOp -> + .)
+    FLOATLIT        reduce using rule 3 (AddOp -> + .)
+    (               reduce using rule 3 (AddOp -> + .)
 
 
 state 11
 
-    (5) MulOp -> % .
+    (4) AddOp -> - .
 
-    ID              reduce using rule 5 (MulOp -> % .)
-    INTLIT          reduce using rule 5 (MulOp -> % .)
-    FLOATLIT        reduce using rule 5 (MulOp -> % .)
-    (               reduce using rule 5 (MulOp -> % .)
+    ID              reduce using rule 4 (AddOp -> - .)
+    INTLIT          reduce using rule 4 (AddOp -> - .)
+    FLOATLIT        reduce using rule 4 (AddOp -> - .)
+    (               reduce using rule 4 (AddOp -> - .)
 
 
 state 12
 
-    (10) Primary -> ( Term . )
-    (1) Term -> Term . MulOp Factor
-    (3) MulOp -> . *
-    (4) MulOp -> . /
-    (5) MulOp -> . %
+    (5) Term -> Term MulOp . Factor
+    (10) Factor -> . Primary
+    (11) Primary -> . ID
+    (12) Primary -> . INTLIT
+    (13) Primary -> . FLOATLIT
+    (14) Primary -> . ( Term )
 
-    )               shift and go to state 14
-    *               shift and go to state 9
-    /               shift and go to state 10
-    %               shift and go to state 11
+    ID              shift and go to state 5
+    INTLIT          shift and go to state 6
+    FLOATLIT        shift and go to state 7
+    (               shift and go to state 8
 
-    MulOp                          shift and go to state 8
+    Factor                         shift and go to state 18
+    Primary                        shift and go to state 4
 
 state 13
 
-    (1) Term -> Term MulOp Factor .
+    (7) MulOp -> * .
 
-    *               reduce using rule 1 (Term -> Term MulOp Factor .)
-    /               reduce using rule 1 (Term -> Term MulOp Factor .)
-    %               reduce using rule 1 (Term -> Term MulOp Factor .)
-    $end            reduce using rule 1 (Term -> Term MulOp Factor .)
-    )               reduce using rule 1 (Term -> Term MulOp Factor .)
+    ID              reduce using rule 7 (MulOp -> * .)
+    INTLIT          reduce using rule 7 (MulOp -> * .)
+    FLOATLIT        reduce using rule 7 (MulOp -> * .)
+    (               reduce using rule 7 (MulOp -> * .)
 
 
 state 14
 
-    (10) Primary -> ( Term ) .
+    (8) MulOp -> / .
 
-    *               reduce using rule 10 (Primary -> ( Term ) .)
-    /               reduce using rule 10 (Primary -> ( Term ) .)
-    %               reduce using rule 10 (Primary -> ( Term ) .)
-    $end            reduce using rule 10 (Primary -> ( Term ) .)
-    )               reduce using rule 10 (Primary -> ( Term ) .)
+    ID              reduce using rule 8 (MulOp -> / .)
+    INTLIT          reduce using rule 8 (MulOp -> / .)
+    FLOATLIT        reduce using rule 8 (MulOp -> / .)
+    (               reduce using rule 8 (MulOp -> / .)
+
+
+state 15
+
+    (9) MulOp -> % .
+
+    ID              reduce using rule 9 (MulOp -> % .)
+    INTLIT          reduce using rule 9 (MulOp -> % .)
+    FLOATLIT        reduce using rule 9 (MulOp -> % .)
+    (               reduce using rule 9 (MulOp -> % .)
+
+
+state 16
+
+    (14) Primary -> ( Term . )
+    (5) Term -> Term . MulOp Factor
+    (7) MulOp -> . *
+    (8) MulOp -> . /
+    (9) MulOp -> . %
+
+    )               shift and go to state 19
+    *               shift and go to state 13
+    /               shift and go to state 14
+    %               shift and go to state 15
+
+    MulOp                          shift and go to state 12
+
+state 17
+
+    (1) Add -> Add AddOp Term .
+    (5) Term -> Term . MulOp Factor
+    (7) MulOp -> . *
+    (8) MulOp -> . /
+    (9) MulOp -> . %
+
+    +               reduce using rule 1 (Add -> Add AddOp Term .)
+    -               reduce using rule 1 (Add -> Add AddOp Term .)
+    $end            reduce using rule 1 (Add -> Add AddOp Term .)
+    *               shift and go to state 13
+    /               shift and go to state 14
+    %               shift and go to state 15
+
+    MulOp                          shift and go to state 12
+
+state 18
+
+    (5) Term -> Term MulOp Factor .
+
+    *               reduce using rule 5 (Term -> Term MulOp Factor .)
+    /               reduce using rule 5 (Term -> Term MulOp Factor .)
+    %               reduce using rule 5 (Term -> Term MulOp Factor .)
+    +               reduce using rule 5 (Term -> Term MulOp Factor .)
+    -               reduce using rule 5 (Term -> Term MulOp Factor .)
+    $end            reduce using rule 5 (Term -> Term MulOp Factor .)
+    )               reduce using rule 5 (Term -> Term MulOp Factor .)
+
+
+state 19
+
+    (14) Primary -> ( Term ) .
+
+    *               reduce using rule 14 (Primary -> ( Term ) .)
+    /               reduce using rule 14 (Primary -> ( Term ) .)
+    %               reduce using rule 14 (Primary -> ( Term ) .)
+    +               reduce using rule 14 (Primary -> ( Term ) .)
+    -               reduce using rule 14 (Primary -> ( Term ) .)
+    $end            reduce using rule 14 (Primary -> ( Term ) .)
+    )               reduce using rule 14 (Primary -> ( Term ) .)
 

@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = "FLOATLIT ID IF INTLIT LE PP WHILE\n    Term : Term MulOp Factor\n         | Factor\n    \n    MulOp : '*'\n          | '/'\n          | '%'\n    \n    Factor : Primary\n    \n    Primary : ID\n            | INTLIT\n            | FLOATLIT\n            | '(' Term ')'\n    "
+_lr_signature = "AddFLOATLIT ID IF INTLIT LE PP WHILE\n    Add : Add AddOp Term\n        | Term\n    \n    AddOp : '+'\n          | '-'\n    \n    Term : Term MulOp Factor\n         | Factor\n    \n    MulOp : '*'\n          | '/'\n          | '%'\n    \n    Factor : Primary\n    \n    Primary : ID\n            | INTLIT\n            | FLOATLIT\n            | '(' Term ')'\n    "
     
-_lr_action_items = {'ID':([0,7,8,9,10,11,],[4,4,4,-3,-4,-5,]),'INTLIT':([0,7,8,9,10,11,],[5,5,5,-3,-4,-5,]),'FLOATLIT':([0,7,8,9,10,11,],[6,6,6,-3,-4,-5,]),'(':([0,7,8,9,10,11,],[7,7,7,-3,-4,-5,]),'$end':([1,2,3,4,5,6,13,14,],[0,-2,-6,-7,-8,-9,-1,-10,]),'*':([1,2,3,4,5,6,12,13,14,],[9,-2,-6,-7,-8,-9,9,-1,-10,]),'/':([1,2,3,4,5,6,12,13,14,],[10,-2,-6,-7,-8,-9,10,-1,-10,]),'%':([1,2,3,4,5,6,12,13,14,],[11,-2,-6,-7,-8,-9,11,-1,-10,]),')':([2,3,4,5,6,12,13,14,],[-2,-6,-7,-8,-9,14,-1,-10,]),}
+_lr_action_items = {'ID':([0,8,9,10,11,12,13,14,15,],[5,5,5,-3,-4,5,-7,-8,-9,]),'INTLIT':([0,8,9,10,11,12,13,14,15,],[6,6,6,-3,-4,6,-7,-8,-9,]),'FLOATLIT':([0,8,9,10,11,12,13,14,15,],[7,7,7,-3,-4,7,-7,-8,-9,]),'(':([0,8,9,10,11,12,13,14,15,],[8,8,8,-3,-4,8,-7,-8,-9,]),'$end':([1,2,3,4,5,6,7,17,18,19,],[0,-2,-6,-10,-11,-12,-13,-1,-5,-14,]),'+':([1,2,3,4,5,6,7,17,18,19,],[10,-2,-6,-10,-11,-12,-13,-1,-5,-14,]),'-':([1,2,3,4,5,6,7,17,18,19,],[11,-2,-6,-10,-11,-12,-13,-1,-5,-14,]),'*':([2,3,4,5,6,7,16,17,18,19,],[13,-6,-10,-11,-12,-13,13,13,-5,-14,]),'/':([2,3,4,5,6,7,16,17,18,19,],[14,-6,-10,-11,-12,-13,14,14,-5,-14,]),'%':([2,3,4,5,6,7,16,17,18,19,],[15,-6,-10,-11,-12,-13,15,15,-5,-14,]),')':([3,4,5,6,7,16,18,19,],[-6,-10,-11,-12,-13,19,-5,-14,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'Term':([0,7,],[1,12,]),'Factor':([0,7,8,],[2,2,13,]),'Primary':([0,7,8,],[3,3,3,]),'MulOp':([1,12,],[8,8,]),}
+_lr_goto_items = {'Add':([0,],[1,]),'Term':([0,8,9,],[2,16,17,]),'Factor':([0,8,9,12,],[3,3,3,18,]),'Primary':([0,8,9,12,],[4,4,4,4,]),'AddOp':([1,],[9,]),'MulOp':([2,16,17,],[12,12,12,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -26,15 +26,19 @@ for _k, _v in _lr_goto_items.items():
        _lr_goto[_x][_k] = _y
 del _lr_goto_items
 _lr_productions = [
-  ("S' -> Term","S'",1,None,None,None),
-  ('Term -> Term MulOp Factor','Term',3,'p_Term','scanner.py',48),
-  ('Term -> Factor','Term',1,'p_Term','scanner.py',49),
-  ('MulOp -> *','MulOp',1,'p_MulOp','scanner.py',54),
-  ('MulOp -> /','MulOp',1,'p_MulOp','scanner.py',55),
-  ('MulOp -> %','MulOp',1,'p_MulOp','scanner.py',56),
-  ('Factor -> Primary','Factor',1,'p_Factor','scanner.py',61),
-  ('Primary -> ID','Primary',1,'p_Primary','scanner.py',66),
-  ('Primary -> INTLIT','Primary',1,'p_Primary','scanner.py',67),
-  ('Primary -> FLOATLIT','Primary',1,'p_Primary','scanner.py',68),
-  ('Primary -> ( Term )','Primary',3,'p_Primary','scanner.py',69),
+  ("S' -> Add","S'",1,None,None,None),
+  ('Add -> Add AddOp Term','Add',3,'p_Add','scanner.py',50),
+  ('Add -> Term','Add',1,'p_Add','scanner.py',51),
+  ('AddOp -> +','AddOp',1,'p_AddOp','scanner.py',57),
+  ('AddOp -> -','AddOp',1,'p_AddOp','scanner.py',58),
+  ('Term -> Term MulOp Factor','Term',3,'p_Term','scanner.py',64),
+  ('Term -> Factor','Term',1,'p_Term','scanner.py',65),
+  ('MulOp -> *','MulOp',1,'p_MulOp','scanner.py',70),
+  ('MulOp -> /','MulOp',1,'p_MulOp','scanner.py',71),
+  ('MulOp -> %','MulOp',1,'p_MulOp','scanner.py',72),
+  ('Factor -> Primary','Factor',1,'p_Factor','scanner.py',77),
+  ('Primary -> ID','Primary',1,'p_Primary','scanner.py',82),
+  ('Primary -> INTLIT','Primary',1,'p_Primary','scanner.py',83),
+  ('Primary -> FLOATLIT','Primary',1,'p_Primary','scanner.py',84),
+  ('Primary -> ( Term )','Primary',3,'p_Primary','scanner.py',85),
 ]
