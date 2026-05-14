@@ -3,7 +3,13 @@ import ply.yacc as yacc
 
 keywords = {
     'while': 'WHILE',
-    'if': 'IF'
+    'if': 'IF',
+    'else': 'ELSE',
+    'int': 'INT',
+    'bool': 'BOOL',
+    'float': 'FLOAT',
+    'char': 'CHAR',
+    'main': 'MAIN',
 }
 
 tokens = [
@@ -11,17 +17,32 @@ tokens = [
     'FLOATLIT',
     'ID',
     'LE',
-    'PP'
+    'GE',
+    'EQ',
+    'NE',
+    'AND',
+    'OR',
 ] + list(keywords.values())
 
 t_ignore = ' \t\n'
 
-t_LE = r'<='
-t_PP = r'\+\+'
+t_OR  = r'\|\|'
+t_AND = r'&&'
+t_EQ  = r'=='
+t_NE  = r'!='
+t_LE  = r'<='
+t_GE  = r'>='
 
-literals = '+-*/-(){} ,;='
+literals = '+-*/%(){};=<>!'
 
-start = 'Add'
+# La gramática completa de la foto inicia en Program
+start = 'Program'
+
+# Para evitar conflicto del else
+precedence = (
+    ('nonassoc', 'IFX'),
+    ('nonassoc', 'ELSE'),
+)
 
 def t_FLOATLIT(t):
     r'[0-9](_?[0-9])*\.[0-9](_?[0-9])*'
@@ -35,7 +56,7 @@ def t_INTLIT(t):
 
 def t_ID(t):
     r'[a-z][a-zA-Z0-9]*'
-    if t.value in keywords.keys():
+    if t.value in keywords:
         t.type = keywords[t.value]
     return t
 
@@ -45,25 +66,190 @@ def t_error(t):
 
 lexer = lex.lex()
 
-def p_Add(p):
+
+def p_Program(p):
     """
-    Add : Add AddOp Term
-        | Term
+    Program : INT MAIN '(' ')' '{' Declarations Statements '}'
     """
-    return p[1]
+    p[0] = ("program", p[6], p[7])
+
+
+def p_Declarations(p):
+    """
+    Declarations : Declarations Declaration
+                 | empty
+    """
+    if len(p) == 3:
+        p[0] = p[1] + [p[2]]
+    else:
+        p[0] = []
+
+
+def p_Declaration(p):
+    """
+    Declaration : Type ID ';'
+    """
+    p[0] = ("declaration", p[1], p[2])
+
+
+def p_Type(p):
+    """
+    Type : INT
+         | BOOL
+         | FLOAT
+         | CHAR
+    """
+    p[0] = p[1]
+
+
+def p_Statements(p):
+    """
+    Statements : Statements Statement
+               | empty
+    """
+    if len(p) == 3:
+        p[0] = p[1] + [p[2]]
+    else:
+        p[0] = []
+
+
+def p_Statement(p):
+    """
+    Statement : ';'
+              | Block
+              | Assignment
+              | IfStatement
+              | WhileStatement
+    """
+    if p[1] == ';':
+        p[0] = ("empty_statement",)
+    else:
+        p[0] = p[1]
+
+
+def p_Block(p):
+    """
+    Block : '{' Statements '}'
+    """
+    p[0] = ("block", p[2])
+
+
+def p_Assignment(p):
+    """
+    Assignment : ID '=' Expression ';'
+    """
+    p[0] = ("assign", p[1], p[3])
+
+
+def p_IfStatement(p):
+    """
+    IfStatement : IF '(' Expression ')' Statement %prec IFX
+                | IF '(' Expression ')' Statement ELSE Statement
+    """
+    if len(p) == 6:
+        p[0] = ("if", p[3], p[5])
+    else:
+        p[0] = ("if_else", p[3], p[5], p[7])
+
+
+def p_WhileStatement(p):
+    """
+    WhileStatement : WHILE '(' Expression ')' Statement
+    """
+    p[0] = ("while", p[3], p[5])
+
+
+def p_Expression(p):
+    """
+    Expression : Expression OR Conjunction
+               | Conjunction
+    """
+    if len(p) == 4:
+        p[0] = ("binop", "||", p[1], p[3])
+    else:
+        p[0] = p[1]
+
+
+def p_Conjunction(p):
+    """
+    Conjunction : Conjunction AND Equality
+                | Equality
+    """
+    if len(p) == 4:
+        p[0] = ("binop", "&&", p[1], p[3])
+    else:
+        p[0] = p[1]
+
+
+def p_Equality(p):
+    """
+    Equality : Relation EqOp Relation
+             | Relation
+    """
+    if len(p) == 4:
+        p[0] = ("binop", p[2], p[1], p[3])
+    else:
+        p[0] = p[1]
+
+
+def p_EqOp(p):
+    """
+    EqOp : EQ
+         | NE
+    """
+    p[0] = p[1]
+
+
+def p_Relation(p):
+    """
+    Relation : Addition RelOp Addition
+             | Addition
+    """
+    if len(p) == 4:
+        p[0] = ("binop", p[2], p[1], p[3])
+    else:
+        p[0] = p[1]
+
+
+def p_RelOp(p):
+    """
+    RelOp : '<'
+          | LE
+          | '>'
+          | GE
+    """
+    p[0] = p[1]
+
+
+def p_Addition(p):
+    """
+    Addition : Addition AddOp Term
+             | Term
+    """
+    if len(p) == 4:
+        p[0] = ("binop", p[2], p[1], p[3])
+    else:
+        p[0] = p[1]
+
 
 def p_AddOp(p):
     """
     AddOp : '+'
           | '-'
     """
-    return p[1]
+    p[0] = p[1]
+
 
 def p_Term(p):
     """
     Term : Term MulOp Factor
          | Factor
     """
+    if len(p) == 4:
+        p[0] = ("binop", p[2], p[1], p[3])
+    else:
+        p[0] = p[1]
+
 
 def p_MulOp(p):
     """
@@ -71,19 +257,47 @@ def p_MulOp(p):
           | '/'
           | '%'
     """
+    p[0] = p[1]
+
 
 def p_Factor(p):
     """
-    Factor : Primary
+    Factor : UnaryOp Primary
+           | Primary
     """
+    if len(p) == 3:
+        p[0] = ("unary", p[1], p[2])
+    else:
+        p[0] = p[1]
+
+
+def p_UnaryOp(p):
+    """
+    UnaryOp : '-'
+            | '!'
+    """
+    p[0] = p[1]
+
 
 def p_Primary(p):
     """
     Primary : ID
             | INTLIT
             | FLOATLIT
-            | '(' Term ')'
+            | '(' Expression ')'
     """
+    if len(p) == 4:
+        p[0] = p[2]
+    else:
+        p[0] = p[1]
+
+
+def p_empty(p):
+    """
+    empty :
+    """
+    p[0] = None
+
 
 def p_error(p):
     if p:
@@ -91,6 +305,24 @@ def p_error(p):
     else:
         print("Error sintáctico")
 
+
 parser = yacc.yacc()
 
-print(parser.parse("3+3"))
+codigo = """
+int main() {
+    int x;
+    float y;
+    x = 3 + 3;
+    y = x * 2.5;
+    if (x <= 10) {
+        y = y + 1;
+    } else {
+        y = y - 1;
+    }
+    while (x < 20) {
+        x = x + 1;
+    }
+}
+"""
+
+print(parser.parse(codigo))
